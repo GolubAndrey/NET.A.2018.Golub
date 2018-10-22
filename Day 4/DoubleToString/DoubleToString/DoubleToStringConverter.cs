@@ -13,12 +13,67 @@ namespace DoubleToString
         private const int mantissaLength = 52;
         private const int exponentLength = 11;
 
+
         /// <summary>
         /// Convert double to binary string according to IEEE 754
         /// </summary>
         /// <param name="value">Input double number</param>
         /// <returns>Binary string</returns>
-        public static string ConvertDoubleToString(double value)
+        public static string ConvertingDoubleToString(double value)
+        {
+            return ConvertDoubleToString(value);
+        }
+
+        /// <summary>
+        /// Convert double to binary string according to IEEE 754
+        /// </summary>
+        /// <param name="value1">Input double number</param>
+        /// <param name="value2">Input double number</param>
+        /// <returns>Array of binary strings</returns>
+        public static string[] ConvertingDoubleToString(double value1,double value2)
+        {
+            string[] result = new string[2];
+            result[0]=ConvertDoubleToString(value1);
+            result[1] = ConvertDoubleToString(value2);
+            return result;
+        }
+
+        /// <summary>
+        /// Convert double to binary string according to IEEE 754
+        /// </summary>
+        /// <param name="value1">Input double number</param>
+        /// <param name="value2">Input double number</param>
+        /// <param name="value3">Input double number</param>
+        /// <returns>Array of binary strings</returns>
+        public static string[] ConvertingDoubleToString(double value1, double value2,double value3)
+        {
+            string[] result = new string[3];
+            result[0] = ConvertDoubleToString(value1);
+            result[1] = ConvertDoubleToString(value2);
+            result[2] = ConvertDoubleToString(value3);
+            return result;
+        }
+
+        /// <summary>
+        /// Convert double to binary string according to IEEE 754
+        /// </summary>
+        /// <param name="values">Array of double numbers</param>
+        /// <returns>Array of binary strings</returns>
+        public static string[] ConvertingDoubleToString(params double[] values)
+        {
+            string[] result = new string[values.Length];
+            for (int i=0;i<result.Length;i++)
+            {
+                result[i] = ConvertDoubleToString(values[i]);
+            }
+            return result;
+        }
+        /// <summary>
+        /// Convert double to binary string according to IEEE 754
+        /// </summary>
+        /// <param name="value">Input double number</param>
+        /// <returns>Binary string</returns>
+        private static string ConvertDoubleToString(double value)
         {
             string sign = GetSigh(value);
 
@@ -32,6 +87,8 @@ namespace DoubleToString
 
             return $"{sign}{binaryIntegerPart}{binaryFractionPart}";
         }
+        
+
 
         private static string GetSigh(double value)
         {

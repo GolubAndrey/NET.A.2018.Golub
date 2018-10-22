@@ -20,7 +20,7 @@ namespace NUnitDoubleToStringConverterTests
         [TestCase(0.0, ExpectedResult = "0000000000000000000000000000000000000000000000000000000000000000")]
         public string ConvertDoubleToString_VariousInputData(double value)
         {
-            return DoubleToStringConverter.ConvertDoubleToString(value);
+            return DoubleToStringConverter.ConvertingDoubleToString(value);
         }
     }
 }
