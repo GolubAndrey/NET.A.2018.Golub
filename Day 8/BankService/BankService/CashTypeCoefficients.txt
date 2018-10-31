@@ -1,0 +1,4 @@
+Base 0 0
+Silver 0,002 0,004
+Gold 0,003 0,005
+Platinum 0,004 0,006
