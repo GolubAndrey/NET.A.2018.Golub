@@ -22,5 +22,13 @@ namespace NUnitDoubleToStringConverterTests
         {
             return DoubleToStringConverter.ConvertingDoubleToString(value);
         }
+
+        [TestCase(new double[] { -255.255, 255.255},
+            ExpectedResult = new string[] { "1100000001101111111010000010100011110101110000101000111101011100" ,
+                "0100000001101111111010000010100011110101110000101000111101011100" })]
+        public string[] ConverDoubleToStringWithDelegate_VariousInputData(double[] array)
+        {
+            return DoubleToStringConverter.ConvertingDoubleToString(DoubleToStringConverter.ConvertingDoubleToString, array);
+        }
     }
 }
