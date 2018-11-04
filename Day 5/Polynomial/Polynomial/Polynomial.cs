@@ -6,9 +6,11 @@ using System.Threading.Tasks;
 
 namespace Polynomial
 {
-    public sealed class Polynomial
+    public sealed class Polynomial:IEquatable<Polynomial>,ICloneable
     {
         private double[] coefficients { get; set; }
+
+        private const double accuracy = 0.0001;
 
         /// <summary>
         /// Constructor which gets power-related coefficients
@@ -16,8 +18,10 @@ namespace Polynomial
         /// <param name="array">coefficients</param>
         public Polynomial(double[] array)
         {
-            TestingArray(array);
-            coefficients = array;
+            double[] tempArray = new double[array.Length];
+            Array.Copy(array, tempArray, 0);
+            TestingArray(tempArray);
+            coefficients = tempArray;
         }
         
         /// <summary>
@@ -43,7 +47,7 @@ namespace Polynomial
         }
 
         public int Length { get { return coefficients.Length; } }
-
+        
         /// <summary>
         /// Overloading of + operator
         /// </summary>
@@ -163,7 +167,20 @@ namespace Polynomial
         {
             return firstPolynomial / devider;
         }
+        
+        public static Polynomial Add(Polynomial polynom1, Polynomial polynom2) => polynom1 + polynom2;
 
+        public static Polynomial Subtract(Polynomial polynom1, Polynomial polynom2) => polynom1 - polynom2;
+
+        public static Polynomial Multiply(Polynomial polynom1, Polynomial polynom2) => polynom1 * polynom2;
+
+        public static Polynomial Multiply(int multiplier, Polynomial polynom1) => multiplier*polynom1;
+
+        public static Polynomial Multiply(Polynomial polynom1, int multiplier) => polynom1*multiplier;
+
+        public static Polynomial Division(Polynomial polynom1, int divider) => polynom1 / divider;
+
+        public static Polynomial Division(int divider, Polynomial polynom1) => polynom1 / divider;
 
         /// <summary>
         /// Overloading of == operator
@@ -173,21 +190,7 @@ namespace Polynomial
         /// <returns>Equality test result</returns>
         public static bool operator ==(Polynomial firstPolynomial, Polynomial secondPolynomial)
         {
-            const double accuracy = 0.001;
-
-            if (firstPolynomial.Length!=secondPolynomial.Length)
-            {
-                return false;
-            }
-
-            for (int i=0;i<firstPolynomial.Length;i++)
-            {
-                if (Math.Abs(firstPolynomial[i]-secondPolynomial[i])>accuracy)
-                {
-                    return false;
-                }
-            }
-            return true;
+            return firstPolynomial.Equals(secondPolynomial);
         }
 
         /// <summary>
@@ -215,11 +218,11 @@ namespace Polynomial
                 {
                     if (stringBuilder.Length == 0)
                     {
-                        stringBuilder.AppendFormat($"{0}*x^{1}", this[i], i);
+                        stringBuilder.Append($"{this[i]}*x^{i}");
                     }
                     else
                     {
-                        stringBuilder.AppendFormat($" + {0}*x^{1}", this[i], i);
+                        stringBuilder.Append($" + {this[i]}*x^{i}");
                     }
                 }
             }
@@ -247,18 +250,33 @@ namespace Polynomial
         /// <returns>True if equals</returns>
         public override bool Equals(object obj)
         {
+            if (obj==null)
+            {
+                return false;
+            }
             Polynomial tempPolynom = obj as Polynomial;
 
-            if (tempPolynom?.Length != Length)
-                return false;
+            return Equals(tempPolynom);
+        }
 
-            for (int i = 0; i <= Length; i++)
+        public bool Equals(Polynomial polynom)
+        {
+            if (ReferenceEquals(polynom,null))
             {
-                if (Math.Abs(this[i] - tempPolynom[i]) > double.Epsilon)
-                    return false;
+                return false;
             }
 
+            for (int i = 0; i < Length; i++)
+            {
+                if (Math.Abs(this[i] - polynom[i]) > accuracy)
+                    return false;
+            }
             return true;
+        }
+
+        public object Clone()
+        {
+            return new Polynomial(this.coefficients);
         }
 
 

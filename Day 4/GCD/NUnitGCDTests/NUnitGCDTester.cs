@@ -12,7 +12,7 @@ namespace NUnitGCDTests
         public void EuclideCalculate_InvalideArray(params int[] array)
         {
             long time;
-            Assert.Throws<ArgumentException>(() => GCDCounter.EuclideCalculate(out time,array));
+            Assert.Throws<ArgumentException>(() => GCDCounter.GCDCalculate(GCDCounter.GCDEuclide,out time,array));
         }
 
         [TestCase(3,6,9,ExpectedResult =3)]
@@ -23,7 +23,7 @@ namespace NUnitGCDTests
         public int EuclideCalculate_ValidArray(params int[] array)
         {
             long time;
-            return GCDCounter.EuclideCalculate(out time, array);
+            return GCDCounter.GCDCalculate(GCDCounter.GCDEuclide,out time, array);
         }
 
         [TestCase(-1, 2, 5, 6)]
@@ -31,7 +31,7 @@ namespace NUnitGCDTests
         public void StainCalculate_InvalideArray(params int[] array)
         {
             long time;
-            Assert.Throws<ArgumentException>(() => GCDCounter.StainCalculate(out time, array));
+            Assert.Throws<ArgumentException>(() => GCDCounter.GCDCalculate(GCDCounter.GCDStain,out time, array));
         }
 
         [TestCase(4, 16, 24, ExpectedResult = 4)]
@@ -42,7 +42,7 @@ namespace NUnitGCDTests
         public int StainCalculate_ValidArray(params int[] array)
         {
             long time;
-            return GCDCounter.StainCalculate(out time, array);
+            return GCDCounter.GCDCalculate(GCDCounter.GCDStain,out time, array);
         }
     }
 }

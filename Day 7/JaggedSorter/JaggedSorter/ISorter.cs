@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace JaggedSorter
 {
-    public interface ISorter:IComparer<int[]>,IArrayOperations
+    public interface ISorter:IComparer<int[]>
     {
+        int Compare(int[] array1, int[] array2);
     }
 }

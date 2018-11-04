@@ -8,13 +8,19 @@ namespace GCD
 {
     public static class GCDCounter
     {
+        private delegate int GCDCalculatorFor2Params(out long time, int number1, int number2);
+        private delegate int GCDCalculatorFor3Params(out long time, int number1, int number2, int number3);
+        private delegate int GCDCalculatorForNParams(out long time, params int[] numbers);
+
+        public delegate int GCDCalculators(int a, int b);
         /// <summary>
-        /// Calculate GCD using Euclide's algoritm
+        /// Calculate GCD
         /// </summary>
+        /// <param name="calculator">Delegate with method of counting GCD</param>
         /// <param name="time">Method execution time as output parameter</param>
         /// <param name="numbers">Input number array</param>
         /// <returns>GCD of input numbers</returns>
-        public static int EuclideCalculate(out long time,params int[] numbers)
+        public static int GCDCalculate(GCDCalculators calculator,out long time,params int[] numbers)
         {
             if (!IsNormalArray(numbers))
             {
@@ -23,10 +29,10 @@ namespace GCD
             System.Diagnostics.Stopwatch timer = new System.Diagnostics.Stopwatch();
             timer.Start();
 
-            int temp = GCDEuclide(numbers[0], numbers[1]);
+            int temp = calculator(numbers[0], numbers[1]);
             for (int i=2;i<numbers.Length && temp!=1;i++)
             {
-                temp = GCDEuclide(temp, numbers[i]);
+                temp = calculator(temp, numbers[i]);
             }
             timer.Stop();
             time = timer.ElapsedMilliseconds;
@@ -34,28 +40,40 @@ namespace GCD
         }
 
         /// <summary>
-        /// Calculate GCD using Stain's algoritm
+        /// Calculate GCD using delegate with calculating method
         /// </summary>
+        /// <param name="calculator">Delegate with method of counting GCD</param>
         /// <param name="time">Method execution time as output parameter</param>
-        /// <param name="numbers">Input number array</param>
+        /// <param name="number1">Input number 1</param>
+        /// <param name="number2">Input number 2</param>
         /// <returns>GCD of input numbers</returns>
-        public static int StainCalculate(out long time, params int[] numbers)
+        public static int GCDCalculate(GCDCalculators calculator,out long time,int number1,int number2)
         {
-            if (!IsNormalArray(numbers))
-            {
-                throw new ArgumentException();
-            }
             System.Diagnostics.Stopwatch timer = new System.Diagnostics.Stopwatch();
             timer.Start();
-
-            int temp = GCDStain(numbers[0], numbers[1]);
-            for (int i = 2; i < numbers.Length && temp != 1; i++)
-            {
-                temp = GCDStain(temp, numbers[i]);
-            }
+            int result=calculator(number1, number2);
             timer.Stop();
             time = timer.ElapsedMilliseconds;
-            return temp;
+            return result;
+        }
+
+        /// <summary>
+        /// Calculate GCD using delegate with calculating method
+        /// </summary>
+        /// <param name="calculator">Delegate with method of counting GCD</param>
+        /// <param name="time">Method execution time as output parameter</param>
+        /// <param name="number1">Input number 1</param>
+        /// <param name="number2">Input number 2</param>
+        /// <param name="number3">Input number 3</param>
+        /// <returns>GCD of input numbers</returns>
+        public static int GCDCalculate(GCDCalculators calculator, out long time, int number1, int number2,int number3)
+        {
+            System.Diagnostics.Stopwatch timer = new System.Diagnostics.Stopwatch();
+            timer.Start();
+            int result = calculator(calculator(number1, number2),number3);
+            timer.Stop();
+            time = timer.ElapsedMilliseconds;
+            return result;
         }
 
         private static bool IsNormalArray(int[] array)
@@ -76,7 +94,7 @@ namespace GCD
             return true;
         }
 
-        private static int GCDEuclide(int a,int b)
+        public static int GCDEuclide(int a,int b)
         {
             while (a!=0 && b!=0)
             {
@@ -92,7 +110,7 @@ namespace GCD
             return a + b;
         }
 
-        private static int GCDStain(int a, int b)
+        public static int GCDStain(int a, int b)
         {
             int shift;
             

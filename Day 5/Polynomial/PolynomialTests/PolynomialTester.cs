@@ -18,7 +18,6 @@ namespace PolynomialTests
 
         [TestCase(new double[] { 1, 5, 8 }, 0, ExpectedResult = 1)]
         [TestCase(new double[] { 1, 4, 7 }, 1, ExpectedResult = 4)]
-        [TestCase(new double[] { 1, 4, 9 }, 5, ExpectedResult = 0)]
         public double IndexatorTest(double[] array, int index)
         {
             Polynomial.Polynomial p = new Polynomial.Polynomial(array);

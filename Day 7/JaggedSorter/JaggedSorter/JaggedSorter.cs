@@ -6,49 +6,7 @@ using System.Threading.Tasks;
 
 namespace JaggedSorter
 {
-    public class JaggedSorter
-    {
-        private int[][] array { get; set; }
-       
-
-        public JaggedSorter(int[][] array)
-        {
-            if (array==null)
-            {
-                throw new ArgumentNullException("Null array");
-            }
-            this.array = array;
-        }
-
-        
-        private void Swap(int[] a,int[] b)
-        {
-            int[] temp = a;
-            a = b;
-            b = temp;
-        }
-
-        private void Sorting(ISorter sorter)
-        {
-            for (int i = 0; i < array.Length; i++)
-            {
-                for (int j = i + 1; j < array.Length; j++)
-                {
-                    if (sorter.Compare(array[i],array[j])>0)
-                    {
-                        Swap(array[i],array[j]);
-                    }
-                }
-            }
-        }
-        public void Sort(ISorter sorter)
-        {
-            Array.Sort(this.array, sorter);
-            //Sorting(sorter);
-        }
-    }
-
-    public class ArrayOperations:IArrayOperations
+    public class ArrayOperations
     {
         public int GetSum(int[] array)
         {
@@ -87,7 +45,7 @@ namespace JaggedSorter
         }
     }
 
-    public class MinElementSorter: ArrayOperations,ISorter
+    public class MinElementSorter : ArrayOperations, ISorter
     {
         public MinElementSorter()
         { }
@@ -95,7 +53,7 @@ namespace JaggedSorter
         {
             return GetMinElement(array1).CompareTo(GetMinElement(array2));
         }
-        
+
     }
 
     public class MaxElementSorter : ArrayOperations, ISorter

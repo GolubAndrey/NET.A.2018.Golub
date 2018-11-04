@@ -17,60 +17,102 @@ namespace FindNextBiggerNumber
         {
             if (number<=0)
             {
-                throw new ArgumentOutOfRangeException();
-            }
-            
-            int[] numberArray = new int[number.ToString().Length];
-            for (int i = 0; i < numberArray.Length; i++)
-            {
-                numberArray[i] = int.Parse(number.ToString()[i].ToString());
+                throw new ArgumentOutOfRangeException("Number should be more than 0");
             }
 
+            int[] numberArray = StringToIntArray(number.ToString());
             
-            bool flag = false;
-            for (int i=0;i< numberArray.Length-1;i++)
-            {
-                if (numberArray[i] < numberArray[i + 1])
-                    flag = true;
-            }
-            if (!flag)
+            if (IsSortedArray(numberArray))
             {
                 return -1;
             }
 
 
-
-            flag = false;
-            for (int i = numberArray.Length-1; i > 0; i--)
+            int index = IndexOfFirstUnsortedElementFromTheEnd(numberArray);
+            if (index == -1)
             {
-                if (numberArray[i] > numberArray[i - 1])
+                return -1;
+            }
+
+            int tempIndex = IndexOfTheSmallestDigitGreaterThan(index,numberArray);
+            int temp = numberArray[tempIndex];
+
+            SwapingElementWithShifting(numberArray, index, tempIndex);
+            Array.Sort(numberArray, index, numberArray.Length - index);
+
+
+            return IntArrayToInt(numberArray);
+        }
+
+        private static void SwapingElementWithShifting(int[] array,int index1,int index2)
+        {
+            int temp = array[index2];
+            for (int k = index2 - 1; k >= index1 - 1; k--)
+            {
+                array[k + 1] = array[k];
+            }
+            array[index1 - 1] = temp;
+        }
+        private static int[] StringToIntArray(string stringNumber)
+        {
+            const int biasFromCharToInt = 48;
+            int[] intArray = new int[stringNumber.Length];
+            for(int i=0;i<intArray.Length;i++)
+            {
+                intArray[i]=Convert.ToInt32(stringNumber[i]-biasFromCharToInt);
+            }
+
+            return intArray;
+        }
+
+        private static bool IsSortedArray(int[] array)
+        {
+            for (int i = 0; i < array.Length - 1; i++)
+            {
+                if (array[i] < array[i + 1])
                 {
-                    int index = 0;
-                    int temp = 10;
-                    for (int j = i; j < numberArray.Length; j++)
-                    {
-                        if (numberArray[j] > numberArray[i-1] && numberArray[j] < temp)
-                        {
-                            temp = numberArray[j];
-                            index = j;
-                        }
-                    }
-                    for (int k = index - 1; k >= i - 1; k--)
-                    {
-                        numberArray[k + 1] = numberArray[k];
-                    }
-                    numberArray[i - 1] = temp;
-                    Array.Sort(numberArray, i, numberArray.Length - i);
-                    break;
+                    return false;
                 }
             }
+            return true;
+        }
+
+        private static int IntArrayToInt(int[] array)
+        {
             StringBuilder stringBuilder = new StringBuilder();
-            foreach (int i in numberArray)
+            foreach (int i in array)
             {
                 stringBuilder.Append(i);
             }
 
             return int.Parse(stringBuilder.ToString());
+        }
+
+        private static int IndexOfFirstUnsortedElementFromTheEnd(int[] array)
+        {
+            for (int i = array.Length - 1; i > 0; i--)
+            {
+                if (array[i] > array[i - 1])
+                {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
+        private static int IndexOfTheSmallestDigitGreaterThan(int index,int[] array)
+        {
+            int tempIndex = 0;
+            int temp = 10;
+            for (int j = index; j < array.Length; j++)
+            {
+                if (array[j] > array[index - 1] && array[j] < temp)
+                {
+                    temp = array[j];
+                    tempIndex = j;
+                }
+            }
+            return tempIndex;
         }
     }
 }
