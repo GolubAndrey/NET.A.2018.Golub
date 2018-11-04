@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace BankService
 {
-    public class Cash
+    public abstract class Cash
     {
-        private double AmountBonusCoefficient { get; set; }
+        public Account account { get; set; }
+        protected double AmountBonusCoefficient { get; set; }
 
-        private double ReplenishmentBonusCoefficient { get; set; }
-
-        private CashType CashType { get; set; }
+        protected double ReplenishmentBonusCoefficient { get; set; }
+        
         public Currency Currency { get; set; }
 
         /// <summary>
@@ -35,9 +35,7 @@ namespace BankService
         {
             ID = id;
             Currency = currency;
-            CashType = cashType;
-            AmountBonusCoefficient = BankService.cashTypeBonusCoefficients[0,(int)CashType];
-            ReplenishmentBonusCoefficient = BankService.cashTypeBonusCoefficients[1, (int)CashType];
+            Amount = 0;
         }
 
         /// <summary>
@@ -61,9 +59,9 @@ namespace BankService
         /// <exception cref="ArgumentException">When value more than cash amount</exception>
         public int Withdraw(int value)
         {
-            if (Amount-value<0)
+            if (Amount-value<-BankService.maxDebtUSD)
             {
-                throw new ArgumentException("No so much money in the cash");
+                throw new ArgumentException("Maximum debt exceeded");
             }
             Amount -= value;
             return value;
@@ -77,22 +75,7 @@ namespace BankService
         {
             if (Currency != currency)
             {
-                Amount = BankService.CurrencyConverter(Currency, currency, Amount);
                 Currency = currency;
-            }
-        }
-
-        /// <summary>
-        /// Change cash type
-        /// </summary>
-        /// <param name="cashType">New cash type</param>
-        public void ChangeCashType(CashType cashType)
-        {
-            if (CashType!=cashType)
-            {
-                CashType = cashType;
-                AmountBonusCoefficient = BankService.cashTypeBonusCoefficients[0, (int)CashType];
-                ReplenishmentBonusCoefficient = BankService.cashTypeBonusCoefficients[1, (int)CashType];
             }
         }
 

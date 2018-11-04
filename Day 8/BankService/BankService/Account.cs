@@ -23,9 +23,10 @@ namespace BankService
         /// </summary>
         public int ID { get; }
 
-        private int bonuseInUSD;
+        private int bonuse;
 
         private List<Cash> Cashs;
+        private CashCreator cashCreator;
 
 
 
@@ -41,6 +42,7 @@ namespace BankService
             Name = name;
             Surname = surname;
             Cashs = new List<Cash>();
+            cashCreator = new CashCreator();
         }
 
         /// <summary>
@@ -50,7 +52,7 @@ namespace BankService
         /// <param name="currency">Currency</param>
         /// <param name="cashType">Cash type</param>
         /// <exception cref="ArgumentException">When cash with this id was created</exception>
-        public void CreateCash(int cashId,Currency currency,CashType cashType)
+        public Cash CreateCash(int cashId,Currency currency,CashType cashType)
         {
             foreach(Cash cash in Cashs)
             {
@@ -59,16 +61,20 @@ namespace BankService
                     throw new ArgumentException("Cash with this ID was created");
                 }
             }
-            Cashs.Add(new Cash(cashId,currency,cashType));
+            Cash tempCash = cashCreator.CreateCash(cashId, currency, cashType);
+            Cashs.Add(tempCash);
+            return tempCash;
         }
 
         /// <summary>
         /// Cash closing
         /// </summary>
         /// <param name="cashId">Cash ID</param>
-        public void CloseCash(int cashId)
+        public Tuple<Cash,int> CloseCash(int cashId)
         {
-            Cashs.Remove(FindCash(cashId));
+            Cash cash = FindCash(cashId);
+            Cashs.Remove(cash);
+            return Tuple.Create(cash,Cashs.Count);
         }
 
         /// <summary>
@@ -78,8 +84,7 @@ namespace BankService
         /// <param name="value">Amount</param>
         public void ReplenishCash(int cashId, int value)
         {
-            bonuseInUSD += BankService.CurrencyConverter(FindCash(cashId).Currency, 
-                Currency.USD, FindCash(cashId).ReplenishCash(value));
+            bonuse += FindCash(cashId).ReplenishCash(value);
         }
 
         /// <summary>
@@ -111,7 +116,11 @@ namespace BankService
         /// <param name="cashType">Cash type</param>
         public void ChangeCashType(int cashId,CashType cashType)
         {
-            FindCash(cashId).ChangeCashType(cashType);
+            CashCreator cashCreator = new CashCreator();
+            Cash cash = FindCash(cashId);
+            int money = cash.Amount;
+            cash = cashCreator.CreateCash(cash.ID, cash.Currency, cashType);
+            cash.Amount = money;
         }
 
         /// <summary>
@@ -120,7 +129,7 @@ namespace BankService
         /// <returns>Bonuses in USD</returns>
         public int SeeBonuses()
         {
-            return bonuseInUSD;
+            return bonuse;
         }
 
         /// <summary>
@@ -131,11 +140,11 @@ namespace BankService
         /// <exception cref="ArgumentException">When value>bonuses</exception>
         public int WithdrawBonuses(int value)
         {
-            if (bonuseInUSD-value<0)
+            if (bonuse-value<0)
             {
                 throw new ArgumentException("No so many bonuses");
             }
-            bonuseInUSD -= value;
+            bonuse -= value;
             return value;
         }
 

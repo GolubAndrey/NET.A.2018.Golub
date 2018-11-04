@@ -16,9 +16,9 @@ namespace BankService
 
     public enum CashType
     {
-        Base,
-        Silver,
-        Gold,
-        Platinum
+        BaseCash,
+        SilverCash,
+        GoldCash,
+        PlatinumCash
     }
 }

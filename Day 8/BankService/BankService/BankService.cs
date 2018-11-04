@@ -9,12 +9,7 @@ namespace BankService
 {
     public class BankService
     {
-        private const int currencyNumber = 4;
-        private const int cashTypeNumber = 4;
-        private const int bonusCoefficientsNumber = 2;
-        private string currencyTransferWay = @"E:\EPAM\NET.A.2018.Golub\Day 8\BankService\BankService\CurrencyTransfers.txt";
-        private string cashTypeCoefficientsWay = @"E:\EPAM\NET.A.2018.Golub\Day 8\BankService\BankService\CashTypeCoefficients.txt";
-
+        public static int maxDebtUSD = 10000;
         /// <summary>
         /// Table with currency transfer
         /// </summary>
@@ -25,40 +20,22 @@ namespace BankService
         /// </summary>
         public static double[,] cashTypeBonusCoefficients;
         private List<Account> accounts { get; set; }
+        private List<Cash> cashs { get; set; }
 
         /// <summary>
         /// Constructor for bank service
         /// </summary>
         public BankService()
         {
-            currencyTransferTable = new double[currencyNumber,currencyNumber];
-            GetCurrencyTransfer();
-            cashTypeBonusCoefficients = new double[bonusCoefficientsNumber, cashTypeNumber];
-            GetCashTypeBonusCoefficients();
             accounts = new List<Account>();
+            cashs = new List<Cash>();
         }
 
-        /// <summary>
-        /// Creating account
-        /// </summary>
-        /// <param name="accountId">Account ID</param>
-        /// <param name="name">Name</param>
-        /// <param name="surname">Surname</param>
-        /// <exception cref="ArgumentException">When this id or name and surname are already used</exception>
-        public void CreateAccount(int accountId,string name,string surname)
+        private Account CreateAccount(int accountId,string name,string surname)
         {
-            foreach (Account account in accounts)
-            {
-                if (account.ID == accountId)
-                {
-                    throw new ArgumentException("This ID is used by another account");
-                }
-                if (account.Name == name && account.Surname == surname)
-                {
-                    throw new ArgumentException("An account with the same name has already been created");
-                }
-            }
-            accounts.Add(new Account(accountId, name, surname));
+            Account account = new Account(accountId, name, surname);
+            accounts.Add(account);
+            return account;
         }
 
         /// <summary>
@@ -67,7 +44,7 @@ namespace BankService
         /// <param name="accountId">Account ID</param>
         /// <param name="name">Name</param>
         /// <param name="surname">Surname</param>
-        public void ClouseAccount(int accountId, string name, string surname)
+        private void ClouseAccount(int accountId, string name, string surname)
         {
             accounts.Remove(FindAccount(accountId, name, surname));
         }
@@ -83,7 +60,15 @@ namespace BankService
         /// <param name="cashType">Cash type</param>
         public void CreateCash(int accountId,string name,string surname, Currency currency,int cashId,CashType cashType)
         {
-            FindAccount(accountId, name, surname).CreateCash(cashId, currency,cashType);
+            foreach(Account account in accounts)
+            {
+                if (account.ID == accountId && account.Name == name && account.Surname == surname)
+                {
+                    cashs.Add(account.CreateCash(cashId, currency, cashType));
+                    return;
+                }
+            }
+            cashs.Add(CreateAccount(accountId, name, surname).CreateCash(cashId, currency, cashType));
         }
 
         /// <summary>
@@ -95,7 +80,12 @@ namespace BankService
         /// <param name="cashId">Cash ID</param>
         public void CloseCash(int accountId,string name,string surname,int cashId)
         {
-            FindAccount(accountId,name,surname).CloseCash(cashId);
+            Tuple<Cash, int> turple = FindAccount(accountId, name, surname).CloseCash(cashId);
+            if (turple.Item2==0)
+            {
+                ClouseAccount(accountId, name, surname);
+            }
+            cashs.Remove(turple.Item1);
         }
 
         /// <summary>
@@ -188,18 +178,6 @@ namespace BankService
         {
             return FindAccount(accountId, name, surname).WithdrawBonuses(value);
         }
-        
-        /// <summary>
-        /// Currency converting
-        /// </summary>
-        /// <param name="currency1">From this currency</param>
-        /// <param name="currency2">To this currency</param>
-        /// <param name="value">Amount</param>
-        /// <returns></returns>
-        public static int CurrencyConverter(Currency currency1,Currency currency2,int value)
-        {
-            return (int)(value * currencyTransferTable[(int)currency1, (int)currency2]);
-        }
 
         private Account FindAccount(int accountId, string name, string surname)
         {
@@ -211,43 +189,6 @@ namespace BankService
                 }
             }
             throw new ArgumentException("No account with such data");
-        }
-
-        private void GetCurrencyTransfer()
-        {
-            try
-            {
-                string[] lines = File.ReadAllLines(currencyTransferWay);
-                for (int i=0;i<lines.Length;i++)
-                {
-                    string[] words = lines[i].Split(' ');
-                    currencyTransferTable[(int)Enum.Parse(typeof(Currency), words[0]), 
-                        (int)Enum.Parse(typeof(Currency), words[1])] = Convert.ToDouble(words[2]);
-                }
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-        
-        private void GetCashTypeBonusCoefficients()
-        {
-            try
-            {
-                string[] lines = File.ReadAllLines(cashTypeCoefficientsWay);
-                for (int i = 0; i < lines.Length; i++)
-                {
-                    string[] words = lines[i].Split(' ');
-                    int cashType = (int)Enum.Parse(typeof(CashType),words[0]);
-                    cashTypeBonusCoefficients[0,cashType]= Convert.ToDouble(words[1]);
-                    cashTypeBonusCoefficients[1, cashType] = Convert.ToDouble(words[2]);
-                }
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
         }
     }
 }
