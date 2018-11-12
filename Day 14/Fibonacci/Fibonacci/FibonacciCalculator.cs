@@ -9,18 +9,24 @@ namespace Fibonacci
 {
     public static class FibonacciCalculator
     {
+        /// <summary>
+        /// Calculate fibonacci row
+        /// </summary>
+        /// <param name="count">Index of last element</param>
+        /// <returns>Enumerator with our row</returns>
         public static IEnumerable<BigInteger> GenerateFibonacciNumbers(int count)
         {
             if (count<=0)
             {
                 throw new ArgumentException($"{nameof(count)} can't be less than 1");
             }
+
             return GenerateFibonacciRow(count);
-        }
+        } 
         private static IEnumerable<BigInteger> GenerateFibonacciRow(int count)
         {
             BigInteger firstNumber = 0, secondNumber = 1, sum;
-            for (int i=0;i<count;i++)
+            for (int i = 0; i < count;i++)
             {
                 yield return firstNumber;
                 sum = firstNumber + secondNumber;
