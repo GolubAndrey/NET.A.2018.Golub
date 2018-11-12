@@ -3,73 +3,30 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Numerics;
 
 namespace Fibonacci
 {
-    public class FibonacciCalculator
+    public static class FibonacciCalculator
     {
-        /// <summary>
-        /// Сalculates Fibonacci series with given indices
-        /// </summary>
-        /// <param name="lowIndex">Lower index</param>
-        /// <param name="highIndex">Upper index</param>
-        /// <returns>Row as int array</returns>
-        public static int[] CalculateFibonacciRow(int lowIndex, int highIndex)
+        public static IEnumerable<BigInteger> GenerateFibonacciNumbers(int count)
         {
-            if (lowIndex>highIndex)
+            if (count<=0)
             {
-                throw new ArgumentException($"{nameof(lowIndex)} should be less than {nameof(highIndex)}");
+                throw new ArgumentException($"{nameof(count)} can't be less than 1");
             }
-            if (lowIndex==highIndex)
-            {
-                int flag;
-                if (Math.Abs(lowIndex) % 2==0)
-                {
-                    flag = 1;
-                }
-                else
-                {
-                    flag = -1;
-                }
-                return new int[1] { FibonacciNumber(lowIndex)*flag };
-            }
-            if (lowIndex>0)
-            {
-                return PositiveFibonacciRow(lowIndex, highIndex);
-            }
-            if (highIndex<0)
-            {
-                return NegativeFibonacciRow(lowIndex, highIndex);
-            }
-            return NegativeFibonacciRow(lowIndex, -1).Concat(PositiveFibonacciRow(0, highIndex)).ToArray();
-        } 
-
-        private static int[] PositiveFibonacciRow(int lowIndex,int highIndex)
-        {
-            int[] result = new int[highIndex-lowIndex+1];
-            for (int i=lowIndex;i<=highIndex;i++)
-            {
-                result[i-lowIndex] = FibonacciNumber(i);
-            }
-            return result;
+            return GenerateFibonacciRow(count);
         }
-
-        private static int[] NegativeFibonacciRow(int lowIndex,int highIndex)
+        private static IEnumerable<BigInteger> GenerateFibonacciRow(int count)
         {
-            int[] result = PositiveFibonacciRow(Math.Abs(highIndex), Math.Abs(lowIndex));
-            int flag = 1;
-            for (int i=0;i<result.Length;i++)
+            BigInteger firstNumber = 0, secondNumber = 1, sum;
+            for (int i=0;i<count;i++)
             {
-                result[i] *= flag;
-                flag *= -1;
+                yield return firstNumber;
+                sum = firstNumber + secondNumber;
+                firstNumber = secondNumber;
+                secondNumber = sum;
             }
-            Array.Reverse(result);
-            return result;
-        }
-
-        private static int FibonacciNumber(int n)
-        {
-            return n > 1 ? FibonacciNumber(n - 1) + FibonacciNumber(n - 2) : n;
         }
     }
 }
