@@ -54,19 +54,13 @@ namespace Queue
 
             if (tempArray.Length==0)
             {
-                size = 1;
-                elements = new T[size];
-                count = 0;
-                rear = -1;
+                throw new ArgumentException($"{nameof(list)} can't be empty");
             }
-            else
-            {
-                size = tempArray.Length;
-                elements = new T[size];
-                tempArray.CopyTo(elements, 0);
-                rear = size - 1;
-                count = size;
-            }
+            size = tempArray.Length;
+            elements = new T[size];
+            tempArray.CopyTo(elements, 0);
+            rear = size - 1;
+            count = size;
             front = 0;
             version = 0;
             index = 0;
