@@ -119,16 +119,18 @@ namespace StreamsDemo
         /// <returns>Number of bytes written</returns>
         public static int InMemoryByBlockCopy(string sourcePath, string destinationPath)
         {
+            //?????????????????????????????
             InputValidation(sourcePath, destinationPath);
             byte[] array = File.ReadAllBytes(sourcePath);
             int bytes = 0;
             using (MemoryStream memStream = new MemoryStream(array.Length))
             {
                 memStream.Write(array, 0, array.Length);
-                bytes = memStream.Read(array, 0, array.Length);
+                array[0] = 1;
+                array = memStream.GetBuffer();
             }
             File.WriteAllBytes(destinationPath, array);
-            return bytes;
+            return array.Length;
         }
 
         #endregion
@@ -174,9 +176,15 @@ namespace StreamsDemo
                 string line = null;
                 using (StreamWriter writter = new StreamWriter(destinationPath, false, Encoding.GetEncoding(1251)))
                 {
+                    bool flag = false;
                     while ((line = reader.ReadLine()) != null)
                     {
-                        writter.WriteLine(line);
+                        if (flag)
+                        {
+                            writter.WriteLine("");
+                        }
+                        flag = true;
+                        writter.Write(line);
                         counter++;
                     }
                 }
