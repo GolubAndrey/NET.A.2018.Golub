@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,80 +7,70 @@ using System.Threading.Tasks;
 
 namespace Queue
 {
-    public class QueueRealisation<T> : IEnumerable<T>
+    public class QueueT<T> : IEnumerable<T>
     {
         private const int sizeCoefficientMultiplier = 2;
 
         private T[] elements;
-        private int front;
-        private int rear;
-        private int size;
+        private int head;
+        private int tail;
+        private int capasity;
         private int count;
-        private int index;
-        public int version { get; private set; }
+        private int version;
 
         /// <summary>
         /// Create queue
         /// </summary>
         /// <exception cref="ArgumentException">Arise when input parameter = 0</exception>
         /// <param name="startSize">Start queue size</param>
-        public QueueRealisation(byte startSize)
+        public QueueT(int startSize)
         {
-            if (startSize == 0)
+            if (startSize <= 0)
             {
                 throw new ArgumentException($"{nameof(startSize)} can't be 0");
             }
-            front = 0;
-            rear = -1;
-            size = startSize;
+            head = 0;
+            tail = -1;
+            capasity = startSize;
             count = 0;
             version = 0;
-            index = 0;
             elements = new T[startSize];
         }
+
+        /// <summary>
+        /// Create empty queue
+        /// </summary>
+        public QueueT() : this(1) { }
 
         /// <summary>
         /// Create queue from the collection
         /// </summary>
         /// <exception cref="ArgumentNullException">Thrown when input parameter is null</exception>
         /// <param name="list">Collection for the queue</param>
-        public QueueRealisation(IEnumerable<T> list)
+        public QueueT(IEnumerable<T> list):this(list.Count())
         {
             if (ReferenceEquals(list,null))
             {
                 throw new ArgumentNullException($"{nameof(list)} can't be null");
             }
-
-            T[] tempArray = list.ToArray();
-
-            if (tempArray.Length==0)
+            foreach(var element in list)
             {
-                throw new ArgumentException($"{nameof(list)} can't be empty");
+                Enqueue(element);
             }
-            size = tempArray.Length;
-            elements = new T[size];
-            tempArray.CopyTo(elements, 0);
-            rear = size - 1;
-            count = size;
-            front = 0;
-            version = 0;
-            index = 0;
-
-
         }
 
         /// <summary>
         /// Adding element in the queue
         /// </summary>
         /// <param name="element">Element for the queue</param>
-        public void Insert(T element)
+        public void Enqueue(T element)
         {
-            if (count == size)
+            if (isFull())
             {
-                elements=Resize();
+                Resize();
             }
-            rear = (rear + 1) % size;
-            elements[rear] = element;
+            tail = (tail + 1) % capasity;
+            elements[tail] = element;
             version++;
             count++;
         }
@@ -90,17 +81,16 @@ namespace Queue
         /// </summary>
         /// <exception cref="InvalidOperationException">Thrown when number of elements in queue equals 0</exception>
         /// <returns>The item that left the queue </returns>
-        public T Delete()
+        public T Dequeue()
         {
-            if (count == 0)
+            if (IsEmpty())
             {
                 throw new InvalidOperationException("Unable to remove item from empty queue");
             }
-            T tempStorage = elements[front];
-            front = (front + 1) % size;
+            T tempStorage = elements[head];
+            head = (head + 1) % capasity;
             count--;
             version++;
-            index = front;
             return tempStorage;
         }
 
@@ -115,7 +105,7 @@ namespace Queue
             {
                 throw new InvalidOperationException($"Queue can't be empty");
             }
-            return elements[front];
+            return elements[head];
         }
 
         /// <summary>
@@ -128,15 +118,6 @@ namespace Queue
         }
 
         /// <summary>
-        /// Check for full queue
-        /// </summary>
-        /// <returns>true when queue is full and false when queue has 1 or more free place</returns>
-        public bool isFull()
-        {
-            return count == size ? true : false;
-        }
-
-        /// <summary>
         /// Get number of elements in the queue
         /// </summary>
         /// <returns>Number of elements in the queue</returns>
@@ -146,39 +127,50 @@ namespace Queue
         /// Get iterator for the queue
         /// </summary>
         /// <returns>Object of IEnumerator</returns>
-        public IEnumerator<T> GetEnumerator() => new QueueIterator(this);
+        public IEnumerator GetEnumerator() => new QueueIterator(this);
 
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-        {
-            throw new NotImplementedException();
-        }
+        IEnumerator IEnumerable.GetEnumerator() => new QueueIterator(this);
+
+        IEnumerator<T> IEnumerable<T>.GetEnumerator() => new QueueIterator(this);
 
 
         internal T GetElement(int index)
         {
-            return elements[(front + index) % count];
+            return elements[(head + index) % count];
         }
 
-        private T[] Resize()
+        private void Resize()
         {
-            T[] newArray = new T[size * sizeCoefficientMultiplier];
-            Array.Copy(elements, front, newArray, 0, size - front);
-            Array.Copy(elements, 0, newArray, size - front + 1, rear);
-            size *= sizeCoefficientMultiplier;
-            front = 0;
-            rear = count - 1;
-            return newArray;
+            T[] newArray = new T[capasity * sizeCoefficientMultiplier];
+            if (head > tail)
+            {
+                Array.Copy(elements, head, newArray, 0, capasity - head);
+                Array.Copy(elements, 0, newArray, capasity - head + 1, tail);
+            }
+            else
+            {
+                Array.Copy(elements, head, newArray, 0, count);
+            }
+            capasity *= sizeCoefficientMultiplier;
+            head = 0;
+            tail = count - 1;
+            elements = newArray;
+        }
+
+        private bool isFull()
+        {
+            return count == capasity ? true : false;
         }
 
         private struct QueueIterator:IEnumerator<T>
         {
-            private QueueRealisation<T> queue;
+            private QueueT<T> queue;
             private int index;
             private int version;
             private T currentElement;
             bool currentFlag;
 
-            internal QueueIterator(QueueRealisation<T> queue)
+            internal QueueIterator(QueueT<T> queue)
             {
                 this.queue = queue;
                 version = queue.version;
@@ -234,10 +226,7 @@ namespace Queue
                 }
             }
 
-            object System.Collections.IEnumerator.Current
-            {
-                get { throw new NotImplementedException(); }
-            }
+            object IEnumerator.Current => this.Current;
 
             public void Reset()
             {

@@ -13,16 +13,16 @@ namespace QueueTests
     {
         [Test]
         public void QueueTest_InvalidCreatingQueue() =>Assert.Throws<ArgumentException>(() 
-            => new QueueRealisation<int>(0));
+            => new QueueT<int>(0));
         
         [Test]
         public void QueueTest_Adding3Elements_QueueHas3Element()
         {
-            QueueRealisation<int> qeue = new QueueRealisation<int>(1);
+            QueueT<int> qeue = new QueueT<int>(1);
 
-            qeue.Insert(1);
-            qeue.Insert(3);
-            qeue.Insert(3);
+            qeue.Enqueue(1);
+            qeue.Enqueue(3);
+            qeue.Enqueue(3);
 
             Assert.AreEqual(3, qeue.Count());
         }
@@ -30,7 +30,7 @@ namespace QueueTests
         [Test]
         public void QueueTest_CreatingQueueWith3Elements_QueueHas3Element()
         {
-            QueueRealisation<string> qeue = new QueueRealisation<string>(new List<string> { "asd", "asd","aaa" });
+            QueueT<string> qeue = new QueueT<string>(new List<string> { "asd", "asd","aaa" });
             
             Assert.AreEqual(3, qeue.Count());
         }
@@ -38,11 +38,11 @@ namespace QueueTests
         [Test]
         public void QueueTest_Add2ElementsAndTake1_QueueHas1Element()
         {
-            QueueRealisation<CastomForTest2> queue =
-                new QueueRealisation<CastomForTest2>(new List<CastomForTest2> { new CastomForTest2(1),
+            QueueT<CastomForTest2> queue =
+                new QueueT<CastomForTest2>(new List<CastomForTest2> { new CastomForTest2(1),
                     new CastomForTest2(2) });
 
-            queue.Delete();
+            queue.Dequeue();
 
             Assert.AreEqual(1, queue.Count());
         }
@@ -50,17 +50,17 @@ namespace QueueTests
         [Test]
         public void QueueTest_QueueWith1ElementAndDelete2_InvalideOperationException()
         {
-            QueueRealisation<CastomForTest> queue = new QueueRealisation<CastomForTest>(1);
-            queue.Insert(new CastomForTest(1));
-            queue.Delete();
+            QueueT<CastomForTest> queue = new QueueT<CastomForTest>(1);
+            queue.Enqueue(new CastomForTest(1));
+            queue.Dequeue();
 
-            Assert.Throws<InvalidOperationException>(()=>queue.Delete());
+            Assert.Throws<InvalidOperationException>(()=>queue.Dequeue());
         }
 
         [Test]
         public void GetQueueEnumerator_TwoStepsAhead_GetCurrentElement_CurrentElementEqual2AddingElementInQueue()
         {
-            QueueRealisation<string> queue = new QueueRealisation<string>(new List<string> { "a", "ab", "abc", "abcd" });
+            QueueT<string> queue = new QueueT<string>(new List<string> { "a", "ab", "abc", "abcd" });
             var enumerator = queue.GetEnumerator();
 
             enumerator.MoveNext();
@@ -72,24 +72,15 @@ namespace QueueTests
         [Test]
         public void IsEmptyTest()
         {
-            QueueRealisation<CastomForTest> queue = new QueueRealisation<CastomForTest>(1);
+            QueueT<CastomForTest> queue = new QueueT<CastomForTest>(1);
 
             Assert.IsTrue(queue.IsEmpty());
         }
 
         [Test]
-        public void IsFullTest()
-        {
-            QueueRealisation<CastomForTest> queue = new QueueRealisation<CastomForTest>(1);
-            queue.Insert(new CastomForTest(1));
-
-            Assert.IsTrue(queue.isFull());
-        }
-
-        [Test]
         public void GetPeekOfEmptyQueue_InvalidOperationException()
         {
-            QueueRealisation<CastomForTest> queue = new QueueRealisation<CastomForTest>(1);
+            QueueT<CastomForTest> queue = new QueueT<CastomForTest>(1);
 
             Assert.Throws<InvalidOperationException>(()=>queue.Peek());
         }
@@ -97,8 +88,8 @@ namespace QueueTests
         [Test]
         public void GetPeekOfQueue_FirstElementInQueue()
         {
-            QueueRealisation<CastomForTest> queue = new QueueRealisation<CastomForTest>(1);
-            queue.Insert(new CastomForTest(1));
+            QueueT<CastomForTest> queue = new QueueT<CastomForTest>(1);
+            queue.Enqueue(new CastomForTest(1));
 
             Assert.AreEqual(new CastomForTest(1), queue.Peek());
         }
