@@ -8,6 +8,6 @@ namespace URLSerializer
 {
     public interface IValidator<T,U>
     {
-        bool Validate(IEnumerable<T> list);
+        bool Validate(T element);
     }
 }

@@ -14,20 +14,16 @@ namespace URLSerializer
         /// </summary>
         /// <param name="list">String enumeration</param>
         /// <returns>True if input data correct, otherwise false</returns>
-        public bool Validate(IEnumerable<string> list)
+        public bool Validate(string element)
         {
-            if (list==null)
+            if (element==null)
             {
                 return false;
             }
 
             try
             {
-                //list.AsParallel().ForAll(x => new Uri(x));????????????????????????
-                foreach(string element in list)
-                {
-                    new Uri(element);
-                }
+                new Uri(element);
             }
             catch(UriFormatException ex)
             {
