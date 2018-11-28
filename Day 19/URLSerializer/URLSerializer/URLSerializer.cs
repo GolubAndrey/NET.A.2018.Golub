@@ -10,20 +10,21 @@ using System.Xml.Linq;
 
 namespace URLSerializer
 {
-    public class URLSerializer:ISerializer<URL>
+    public class URLSerializer : ISerializer<URL>
     {
-        public void Serialize(IEnumerable<URL> list,string way)
+        public void Serialize(IEnumerable<URL> list, string way)
         {
-            var xml = new XElement("urlAddresses", 
+            var xml = new XElement("urlAddresses",
                 list.Select(x => new XElement("urlAddress",
                 new XElement("host",
-                new XAttribute("name",x.HostName)),
-                new XElement("uri",x.segments.Select(y=>
-                new XElement("segment",y))),
-                new XElement("parameters",x.parameters?.Select(y=>
+                new XAttribute("name", x.HostName)),
+                new XElement("uri", x.segments.Select(y =>
+                new XElement("segment", y))),
+                new XElement("parameters", x.parameters?.Select(y=>
                 new XElement("parameter",
                 new XAttribute("value",y.Value),
                 new XAttribute("key",y.Key)))))));
+            xml.Elements("urlAddress").Where(x => x.Element("parameters").IsEmpty).AsParallel().ForAll(x => x.Element("parameters").Remove());
             XDocument xDoc = new XDocument(xml);
             xDoc.Save(way);
         }
