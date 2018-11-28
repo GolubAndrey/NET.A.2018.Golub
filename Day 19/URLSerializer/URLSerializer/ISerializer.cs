@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace URLSerializer
 {
-    interface ISerializer<U>
+    public interface ISerializer<U>
     {
         void Serialize(IEnumerable<U> serializeList,string way);
     }

@@ -8,14 +8,27 @@ namespace URLSerializer
 {
     public class URLParser:IConverter<string,URL>
     {
+        #region IConverter methods
+        /// <summary>
+        /// Convert list of strings to list of URLs
+        /// </summary>
+        /// <param name="urls">List of strings</param>
+        /// <exception cref="ArgumentNullException">Thrown when enumeration is null</exception>
+        /// <returns>List of URLs</returns>
         public IEnumerable<URL> Convert(IEnumerable<string> urls)
         {
-            foreach(string url in urls)
+            if (urls == null)
+            {
+                throw new ArgumentNullException($"{nameof(urls)} can't be null");
+            }
+            foreach (string url in urls)
             {
                 yield return TakeURL(url);
             }
         }
+        #endregion
 
+        #region private methods
         private URL TakeURL(string url)
         {
             if (url == null)
@@ -70,5 +83,6 @@ namespace URLSerializer
             }
             return result;
         }
+        #endregion
     }
 }

@@ -12,8 +12,26 @@ namespace URLSerializer
 {
     public class URLSerializer : ISerializer<URL>
     {
+        #region ISerializer methods
+
+        /// <summary>
+        /// Serialize list of URLs to the file at the specified path
+        /// </summary>
+        /// <param name="list">List of URLs</param>
+        /// <param name="way">File path to write</param>
+        /// <exception cref="ArgumentNullException">Thrown when one of the arguments is null</exception>
         public void Serialize(IEnumerable<URL> list, string way)
         {
+            if (list==null)
+            {
+                throw new ArgumentNullException($"{nameof(list)} can't be null");
+            }
+
+            if (way == null)
+            {
+                throw new ArgumentNullException($"{nameof(way)} can't be null");
+            }
+
             var xml = new XElement("urlAddresses",
                 list.Select(x => new XElement("urlAddress",
                 new XElement("host",
@@ -28,5 +46,6 @@ namespace URLSerializer
             XDocument xDoc = new XDocument(xml);
             xDoc.Save(way);
         }
+        #endregion
     }
 }

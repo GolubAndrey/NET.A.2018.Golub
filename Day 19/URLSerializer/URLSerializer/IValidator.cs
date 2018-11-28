@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace URLSerializer
 {
-    public interface IConverter<T,U>
+    public interface IValidator<T,U>
     {
-        IEnumerable<U> Convert(IEnumerable<T> list);
+        bool Validate(IEnumerable<T> list);
     }
 }
