@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace URLSerializer
 {
-    public class URLValidator:IValidator<string,URL>
+    public class URLValidator:IValidator<string>
     {
         #region IValidator's methods
         /// <summary>

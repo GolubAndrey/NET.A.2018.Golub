@@ -15,7 +15,7 @@ namespace URLSerializer
         /// </summary>
         public override void Load()
         {
-            Bind<IValidator<string, URL>>().To<URLValidator>();
+            Bind<IValidator<string>>().To<URLValidator>();
             Bind<IConverter<string, URL>>().To<URLParser>().WithConstructorArgument("logger", NLog.LogManager.GetCurrentClassLogger());
             Bind<ISerializer<URL>>().To<URLSerializer>();
             Bind<IRepository<string>>().To<URLFileReader>().WithConstructorArgument("way", @"E:\EPAM\NET.A.2018.Golub\Day 19\URLSerializer\URLs.txt");

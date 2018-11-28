@@ -10,7 +10,7 @@ namespace URLSerializer
     public class URLParser:IConverter<string,URL>
     {
         #region private fields
-        private IValidator<string, URL> validator;
+        private IValidator<string> validator;
         private ILogger logger;
         #endregion
 
@@ -21,7 +21,7 @@ namespace URLSerializer
         /// <param name="validator">Validator</param>
         /// <param name="logger">Logger</param>
         /// <exception cref="ArgumentNullException">Thrown when one of the arguments is null</exception>
-        public URLParser(IValidator<string,URL> validator,ILogger logger)
+        public URLParser(IValidator<string> validator,ILogger logger)
         {
             this.validator = validator ?? throw new ArgumentNullException($"{nameof(validator)} can't be null");
             this.logger = logger ?? throw new ArgumentNullException($"{nameof(logger)} can't be null");

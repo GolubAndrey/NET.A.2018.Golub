@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace URLSerializer
 {
-    public interface IValidator<T,U>
+    public interface IValidator<T>
     {
         bool Validate(T element);
     }
