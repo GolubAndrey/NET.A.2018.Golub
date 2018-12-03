@@ -9,7 +9,6 @@ namespace Matrix
     public abstract class AbstractMatrix<T>
     {
         #region fields
-        protected T[,] matrix;
         private int size;
         #endregion
 
@@ -28,31 +27,17 @@ namespace Matrix
                 throw new ArgumentException($"{nameof(size)} - matrix size can't be less than 0");
             }
             this.size = size;
-            matrix = new T[size, size];
         }
         #endregion
-        
+
         /// <summary>
         /// Indexator
         /// </summary>
         /// <param name="row">Number of row</param>
         /// <param name="column">Number of column</param>
         /// <returns>Element from matrix from the cell [row,column]</returns>
-        public T this[int row,int column]
-        {
-            get
-            {
-                PositionCheck(row, column);
-                return this.matrix[row, column];
-            }
-            set
-            {
-                PositionCheck(row, column);
-                T previousValue = this[row, column];
-                InsertElement(value, row, column);
-                OnChangeElement(row, column, previousValue, value);
-            }
-        }
+        public abstract T this[int row,int column] { get;set; }
+        
 
         /// <summary>
         /// Get size of matrix
@@ -66,7 +51,7 @@ namespace Matrix
             ChangeElement?.Invoke(this, new ElementChangingEventArgs(row, column, previousValue, newValue));
         }
 
-        private void PositionCheck(int row,int column)
+        protected void PositionCheck(int row,int column)
         {
             if (row<0 || row>this.size)
             {

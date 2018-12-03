@@ -52,19 +52,37 @@ namespace MatrixTests
         }
 
         [Test]
-        public void SumMatrix()
+        public void SumMatrix_ValideParameterTypes()
         {
             SquareMatrix<int> matrix1 = new SquareMatrix<int>(1);
             matrix1[0, 0] = 1;
             SymmetricMatrix<int> matrix2 = new SymmetricMatrix<int>(1);
             matrix2[0, 0] = 2;
 
-            SumVisitor<int> summator = new SumVisitor<int>();
-            summator.Visit(matrix1, matrix2, (x, y) => x + y);
+            //SumVisitor<int> summator = new SumVisitor<int>();
+
+            //summator.Visit(matrix1, matrix2, (x, y) => x + y);
+            matrix1.Add<int>(matrix2);
 
             Assert.AreEqual(3, matrix1[0, 0]);
+        }
 
+        [Test]
+        public void SumMatrix_InvalideParameterTypes()
+        {
+            SquareMatrix<object> matrix1 = new SquareMatrix<object>(1);
+            matrix1[0, 0] = new object();
+            SymmetricMatrix<object> matrix2 = new SymmetricMatrix<object>(1);
+            matrix2[0, 0] = new object();
+            Assert.Throws<InvalidOperationException>(()=> matrix1.Add<object>(matrix2));
+        }
 
+        [Test]
+        public void SumMatrix_DifferentSizes_ThrownException()
+        {
+            SquareMatrix<int> matrix1 = new SquareMatrix<int>(1);
+            SymmetricMatrix<int> matrix2 = new SymmetricMatrix<int>(2);
+            Assert.Throws<ArgumentException>(()=>matrix1.Add<int>(matrix2));
         }
     }
 }
